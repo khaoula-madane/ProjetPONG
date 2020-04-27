@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<meta charset="utf-8" />
+		<link href='https://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+		<link rel="icon" type="image" href="C:\Users\SABAH\Desktop/logo.png" />
+		<style>
+			body {
+			  background-image: url("C:\Users\SABAH\Desktop/logo.png");
+			}
+			</style>	
+	<style>
+		
+		table {
+  table-layout: fixed;
+  width: 65%;
+  align-items: center;
+  border-collapse: collapse;
+  border: 3px solid rgb(57, 157, 215);
+}
+
+thead th:nth-child(1) {
+  width: 5%;
+}
+
+thead th:nth-child(2) {
+  width: 5%;
+}
+
+thead th:nth-child(3) {
+  width: 5%;
+}
+
+thead th:nth-child(4) {
+  width: 20%;
+}
+
+th, td {
+  padding: 10px;
+}
+html {
+  font-family: 'helvetica neue', helvetica, arial, sans-serif;
+}
+
+thead th {
+  font-family: 'Rock Salt', cursive;
+}
+
+th {
+  letter-spacing: 1px;
+}
+
+td {
+  letter-spacing: 1px;
+}
+
+tbody td {
+  text-align: center;
+}
+thead {
+  
+  color: white;
+  text-shadow: 1px 1px 1px black;
+}
+
+thead th{
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5));
+  border: 3px solid  rgb(116, 139, 204);
+}
+tbody tr:nth-child(odd) {
+  background-color: #95c7e4;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #95c7e4;
+}
+
+
+table {
+  background-color: #39D7C9;
+}
+caption {
+  font-family: 'Rock Salt', cursive;
+  padding: 10px;
+  font-style: italic;
+  caption-side: bottom;
+  color: #666;
+  text-align: right;
+  letter-spacing: 1px;
+}
+
+
+	</style>
+	<head>
+		<title>PING PONG</title>
+		
+
+		</head>
+		
+</head>
+ <body>
+ 
+
+  <script src="./js/game.js"></script>
+  <script src="./js/game.display.js"></script>
+  <script src="./js/game.keycode.js"></script>
+  <script src="./js/game.control.js"></script>
+  <script src="./js/game.ai.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  
+<script id="viewport">
+
+    (function () {
+
+      const socket = io()
+    
+      var requestAnimId;
+      game.socket = socket;
+      var initialisation = function() {
+      
+      
+		}
+		
+		socket.on('init', function(msg){
+			if(game.loaded === false)
+			{
+				game.clientId = socket.id;
+				game.init(msg)
+				requestAnimId = window.requestAnimationFrame(main)
+			}
+		});
+		
+		
+		socket.on('ball', function(msg){			
+			game.ball.move(msg);
+		
+		});
+		socket.on('stopIaReturn', function(msg){	
+			game.control.stopIa(msg[0]);
+			game.disabledPlayers(msg[1]);
+		});
+		
+
+		socket.on('players', function(msg){		
+			game.movePlayers(msg)
+			
+			if(game.ais[0] !== undefined && game.ais[0].enabled === true)
+				game.ais[0].move();
+
+			if(game.ais[1] !== undefined && game.ais[1].enabled === true)
+				game.ais[1].move();
+
+			if( game.ais[2] !== undefined && game.ais[2].enabled === true)
+				game.ais[2].move();			
+
+			socket.emit('movePlayers',game.coordPlayers());
+		});
+      
+		socket.on('score', function(msg){
+			game.updateScore(msg);
+		});
+      
+		function main (){
+		
+			game.clearLayer(game.playersBallLayer);
+			game.displayPlayers();
+			game.displayBall();
+			if ( game.ball.inGame ) {
+				game.lostBall();
+			}
+		
+			requestAnimId = window.requestAnimationFrame(main);
+		}
+		/*if (game.hasWon())
+		return;
+    requestAnimId = window.requestAnimationFrame(main); // rappel de main au prochain rafraichissement de la page
+  }*/
+      window.onload = initialisation; 
+	})();
+	
+
+</script>
+
+	
+	
+	
+
+<table>
+<caption>Commandes du jeu</caption>
+<thead>
+<tr>
+	<th>COMMANDES</th>
+	<th>Déplacer la raquette vers le haut "monter"</th>
+	<th>Déplacer la raquette vers le bas "descendre"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<th><p >Joueur 1  &#128151</p></td>
+	<td>&uarr;</td>
+	<td>&darr;</td>
+</tr>
+<tr>
+	<th><p >Joueur 2  &#128512 </p></th>
+
+	<td>a</td>
+	<td>q</td>
+</tr>
+<tr>
+	<th><p >Joueur 3  &#128516</p></th>
+	<td>t</td>
+	<td>g</td>
+</tr>
+<tr>
+	<th><p >Joueur 4  &#128525</p></th>
+	<td>p</td>
+	<td>m</td>
+</tr>
+</tbody>
+</table>
+</body>
+
+</html>
